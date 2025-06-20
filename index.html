@@ -29,23 +29,23 @@
   
     marker.addEventListener('markerFound', () => {
       if (placed) return;
-      
-      // Marker-Pose holen
+    
       const markerPos = new THREE.Vector3();
+      const markerQuat = new THREE.Quaternion();
       const markerRot = new THREE.Euler();
+    
       anchor.object3D.getWorldPosition(markerPos);
-      anchor.object3D.getWorldRotation(markerRot);
-  
-      // Neues Objekt unabhängig vom Marker erstellen
+      anchor.object3D.getWorldQuaternion(markerQuat);
+      markerRot.setFromQuaternion(markerQuat, 'YXZ'); // YXZ: häufig gut für AR
+    
       const model = document.createElement('a-entity');
       model.setAttribute('gltf-model', '#yourModel');
       model.setAttribute('position', `${markerPos.x} ${markerPos.y} ${markerPos.z}`);
       model.setAttribute('rotation', `${THREE.Math.radToDeg(markerRot.x)} ${THREE.Math.radToDeg(markerRot.y)} ${THREE.Math.radToDeg(markerRot.z)}`);
       model.setAttribute('scale', '0.05 0.05 0.05');
-  
-      // Modell zur Szene hinzufügen (nicht zum Marker!)
+    
       document.querySelector('a-scene').appendChild(model);
-  
+      marker.setAttribute('visible', 'false');
       placed = true;
     });
   </script>
