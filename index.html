@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
+  </head>
+
+  <body style="margin: 0; overflow: hidden">
+    <a-scene embedded arjs>
+      <!-- Marker dient als Referenzpunkt -->
+      <a-marker id="gpsMarker" preset="hiro">
+        <!-- Leeres Objekt, das als Ursprung dient -->
+        <a-entity id="origin"></a-entity>
+      </a-marker>
+
+      <!-- Kamera -->
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      // Feste GPS-Positionen
+      const markerLat = 48.1372;
+      const markerLon = 11.5756;
+
+      const modelLat = 48.13725;
+      const modelLon = 11.5759;
+
+      // Funktion zur Umrechnung von GPS in Meter-Differenz (einfache equirektangulare Näherung)
+      function gpsOffsetInMeters(lat1, lon1, lat2, lon2) {
+        const R = 6371000; // Erdradius in Meter
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const x = dLon * Math.cos((lat1 + lat2) / 2 * Math.PI / 180);
+        const dx = x * R;
+        const dy = dLat * R;
+        return { x: dx, y: 0, z: -dy }; // z nach vorne
+      }
+
+      // Warten bis Marker erkannt
+      const marker = document.querySelector("#gpsMarker");
+      marker.addEventListener("markerFound", () => {
+        if (document.querySelector("#building")) return; // Schon platziert
+
+        const offset = gpsOffsetInMeters(markerLat, markerLon, modelLat, modelLon);
+
+        const entity = document.createElement("a-entity");
+        entity.setAttribute("id", "building");
+        entity.setAttribute("gltf-model", "#yourModel");
+        entity.setAttribute("position", `${offset.x} ${offset.y} ${offset.z}`);
+        entity.setAttribute("scale", "0.05 0.05 0.05");
+        entity.setAttribute("rotation", "0 0 0");
+
+        const origin = document.querySelector("#origin");
+        origin.appendChild(entity);
+      });
+    </script>
+
+    <!-- Modell laden -->
+    <a-assets>
+      <a-asset-item id="yourModel" src="model.glb"></a-asset-item>
+    </a-assets>
+  </body>
+</html>
