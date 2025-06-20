@@ -1,7 +1,8 @@
 <html>
   <head>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ar.js@3.3.2/aframe/build/aframe-ar-nft.js"></script>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <!-- we import arjs version without NFT but with marker + location based support -->
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   </head>
 
   <body style="margin: 0; overflow: hidden">
@@ -25,8 +26,10 @@
       const markerLat = 48.1372;
       const markerLon = 11.5756;
 
-      const modelLat = 48.13725;
-      const modelLon = 11.5759;
+      const modelLat = 48.1372;
+      const modelLon = 11.5756;
+      //const modelLat = 48.13725;
+      //const modelLon = 11.5759;
 
       // Funktion zur Umrechnung von GPS in Meter-Differenz (einfache equirektangulare Näherung)
       function gpsOffsetInMeters(lat1, lon1, lat2, lon2) {
