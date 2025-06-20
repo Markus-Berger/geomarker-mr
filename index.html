@@ -1,58 +1,72 @@
+<!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8" />
+    <title>Marker-basierte AR mit festem Modell</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <!-- we import arjs version without NFT but with marker + location based support -->
+    <!-- AR.js mit Marker- und Location-Unterstützung -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   </head>
 
-  <body style="margin: 0; overflow: hidden">
-  <a-scene embedded arjs>
-    <a-assets>
-      <a-asset-item id="yourModel" src="test.glb"></a-asset-item>
-    </a-assets>
-  
-    <!-- Marker, nur für Initialisierung -->
-    <a-marker id="marker" preset="hiro">
-      <!-- Leeres Platzhalterobjekt, nur zur Poseübernahme -->
-      <a-entity id="markerAnchor"></a-entity>
-    </a-marker>
-  
-    <!-- Kamera -->
-    <a-entity camera></a-entity>
-  </a-scene>
-  
-  <script>
-    let placed = false;
-  
-    function radToDeg(rad) {
-      return rad * (180 / Math.PI);
-    }
-  
-    const marker = document.querySelector('#marker');
-    const anchor = document.querySelector('#markerAnchor');
-  
-    marker.addEventListener('markerFound', () => {
-      if (placed) return;
-  
-      const markerPos = new THREE.Vector3();
-      const markerQuat = new THREE.Quaternion();
-      const markerRot = new THREE.Euler();
-  
-      anchor.object3D.getWorldPosition(markerPos);
-      anchor.object3D.getWorldQuaternion(markerQuat);
-      markerRot.setFromQuaternion(markerQuat, 'YXZ');
-  
-      const model = document.createElement('a-entity');
-      model.setAttribute('gltf-model', '#yourModel');
-      model.setAttribute('position', `${markerPos.x} ${markerPos.y} ${markerPos.z}`);
-      model.setAttribute('rotation', `${radToDeg(markerRot.x)} ${radToDeg(markerRot.y)} ${radToDeg(markerRot.z)}`);
-      model.setAttribute('scale', '0.05 0.05 0.05');
-  
-      document.querySelector('a-scene').appendChild(model);
-  
-      marker.setAttribute('visible', 'false');
-      placed = true;
-    });
-  </script>
+  <body style="margin: 0; overflow: hidden;">
+    <a-scene embedded arjs>
+      <!-- Assets: Modell (muss im gleichen Verzeichnis wie index.html liegen) -->
+      <a-assets>
+        <a-asset-item id="yourModel" src="test.glb"></a-asset-item>
+      </a-assets>
+
+      <!-- Marker (z. B. Hiro) – nur als Referenz beim Start -->
+      <a-marker id="marker" preset="hiro">
+        <!-- Leerer Anker zum Abfragen der Marker-Pose -->
+        <a-entity id="markerAnchor"></a-entity>
+      </a-marker>
+
+      <!-- Kamera -->
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      // Hilfsfunktion zur Umrechnung von Radiant in Grad
+      function radToDeg(rad) {
+        return rad * (180 / Math.PI);
+      }
+
+      let placed = false;
+
+      const marker = document.querySelector("#marker");
+      const anchor = document.querySelector("#markerAnchor");
+
+      marker.addEventListener("markerFound", () => {
+        if (placed) return;
+
+        const markerPos = new THREE.Vector3();
+        const markerQuat = new THREE.Quaternion();
+        const markerRot = new THREE.Euler();
+
+        // Weltposition und Rotation des Markers abfragen
+        anchor.object3D.getWorldPosition(markerPos);
+        anchor.object3D.getWorldQuaternion(markerQuat);
+        markerRot.setFromQuaternion(markerQuat, "YXZ");
+
+        // Neues Modell-Entity an Marker-Pose (aber unabhängig vom Marker)
+        const model = document.createElement("a-entity");
+        model.setAttribute("gltf-model", "#yourModel");
+        model.setAttribute(
+          "position",
+          `${markerPos.x} ${markerPos.y} ${markerPos.z}`
+        );
+        model.setAttribute(
+          "rotation",
+          `${radToDeg(markerRot.x)} ${radToDeg(markerRot.y)} ${radToDeg(markerRot.z)}`
+        );
+        model.setAttribute("scale", "0.05 0.05 0.05");
+
+        document.querySelector("a-scene").appendChild(model);
+
+        // Marker ausblenden (oder optional entfernen)
+        marker.setAttribute("visible", "false");
+        placed = true;
+      });
+    </script>
   </body>
 </html>
