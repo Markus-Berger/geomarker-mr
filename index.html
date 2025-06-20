@@ -12,6 +12,10 @@
         <a-entity id="origin"></a-entity>
       </a-marker>
 
+      <a-assets>
+        <a-asset-item id="yourModel" src="model.glb"></a-asset-item>
+      </a-assets>
+
       <!-- Kamera -->
       <a-entity camera></a-entity>
     </a-scene>
@@ -53,10 +57,5 @@
         origin.appendChild(entity);
       });
     </script>
-
-    <!-- Modell laden -->
-    <a-assets>
-      <a-asset-item id="yourModel" src="model.glb"></a-asset-item>
-    </a-assets>
   </body>
 </html>
